@@ -5,32 +5,55 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alarme de Horários</title>
     <style>
+        :root {
+            --invert-value: 0%; /* Valor padrão da inversão */
+            --background-color: #fff; /* Cor de fundo padrão */
+            --text-color: #000; /* Cor do texto padrão */
+        }
+
         body {
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: #f0f0f0;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s, filter 0.3s;
+            filter: invert(var(--invert-value));
+            position: relative;
         }
+
         #alarm-light {
             width: 100%;
             height: 150px;
-            border-radius: 0%;
             background-color: red;
             opacity: 0.1;
             transition: opacity 0.5s;
         }
+
+        #head {
+            width: 90%;
+            text-align: center;
+            padding: 10px;
+        }
+
+        #logo {
+            max-width: 100%;
+            height: auto;
+        }
+
         .light-on {
             opacity: 1;
             animation: blink 1s infinite;
         }
+
         @keyframes blink {
-            0% { opacity: 1; }
+            0%, 100% { opacity: 1; }
             50% { opacity: 0.1; }
-            100% { opacity: 1; }
         }
-        #stop-button, #test-button {
+
+        button {
             margin-top: 20px;
             padding: 10px 20px;
             background-color: #ff0000;
@@ -39,18 +62,40 @@
             border-radius: 5px;
             cursor: pointer;
         }
+
+        button.toggle-mode {
+            background-color: #000;
+            color: #fff;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+
         #stop-button {
             display: none;
         }
+
         #alarm-times {
             margin-top: 20px;
         }
+
         .time-input {
             margin-bottom: 5px;
+        }
+
+        .slider-container {
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
+    <div id="head">
+        <a href="http://www.alfatek.com.br"><img id="logo" src="logo.png" alt="Logo"></a>
+    </div>
+    <button class="toggle-mode" id="toggle-mode">Alternar Modo</button>
+    <div id="clock">
+        <input type="text" id="datetime" readonly style="border: none; font-size: 8vw; text-align: center;">
+    </div>
     <div id="alarm-light"></div>
     <button id="stop-button">Parar Alarme</button>
     <button id="test-button">Testar Alarme</button>
@@ -77,94 +122,93 @@
         <button id="save-times">Salvar Horários</button>
     </div>
 
+    <div class="slider-container">
+        <label for="invert-slider">Mudança de Tonalidade</label>
+        <input type="range" id="invert-slider" min="0" max="100" value="0" step="1">
+    </div>
+
     <script>
         const alarmLight = document.getElementById('alarm-light');
         const alarmSound = document.getElementById('alarm-sound');
         const stopButton = document.getElementById('stop-button');
         const testButton = document.getElementById('test-button');
         const saveTimesButton = document.getElementById('save-times');
-        let checkAlarmInterval;
+        const toggleModeButton = document.getElementById('toggle-mode');
+        const invertSlider = document.getElementById('invert-slider');
+        const body = document.body;
 
-        // Horários padrão para o alarme
         let alarmTimes = [
             { hour: 8, minute: 0 },
             { hour: 12, minute: 0 },
             { hour: 13, minute: 30 },
             { hour: 18, minute: 0 }
         ];
+        let checkAlarmInterval;
 
-        // Função que verifica se o horário atual corresponde a algum horário de alarme
+        function updateDateTime() {
+            const now = new Date();
+            document.getElementById("datetime").value = now.toLocaleString('pt-BR', {
+                weekday: 'short', year: 'numeric', month: 'numeric', day: 'numeric',
+                hour: 'numeric', minute: 'numeric', second: 'numeric'
+            });
+        }
+
         function checkAlarm() {
             const now = new Date();
-            const hours = now.getHours();
-            const minutes = now.getMinutes();
-
-            if (alarmTimes.some(alarm => alarm.hour === hours && alarm.minute === minutes)) {
+            if (alarmTimes.some(alarm => alarm.hour === now.getHours() && alarm.minute === now.getMinutes())) {
                 triggerAlarm();
             }
         }
 
-        // Função que dispara o alarme
         function triggerAlarm() {
             alarmLight.classList.add('light-on');
-            alarmSound.play().catch(error => console.error('Erro ao tocar o áudio:', error));
+            alarmSound.play();
             stopButton.style.display = 'block';
-
-            // Traz a janela para frente se estiver em segundo plano
-            if (document.hidden) {
-                window.focus();
-                alert("Alarme disparado!");
-            }
-
+            if (document.hidden) window.focus();
             setTimeout(stopAlarm, 60000); // Para o alarme após 1 minuto
         }
 
-        // Função que para o alarme e pausa a verificação por 60 segundos
         function stopAlarm() {
             alarmLight.classList.remove('light-on');
             alarmSound.pause();
             alarmSound.currentTime = 0;
             stopButton.style.display = 'none';
-
-            // Pausa a verificação por 60 segundos
             clearInterval(checkAlarmInterval);
-            setTimeout(() => {
-                startAlarmCheck();
-            }, 60000); // Retoma a verificação após 60 segundos
+            setTimeout(startAlarmCheck, 60000); // Pausa de 60s
         }
 
-        // Função para salvar os horários alterados
         function saveAlarmTimes() {
-            const time1 = document.getElementById('time1').value.split(':');
-            const time2 = document.getElementById('time2').value.split(':');
-            const time3 = document.getElementById('time3').value.split(':');
-            const time4 = document.getElementById('time4').value.split(':');
-
-            alarmTimes = [
-                { hour: parseInt(time1[0]), minute: parseInt(time1[1]) },
-                { hour: parseInt(time2[0]), minute: parseInt(time2[1]) },
-                { hour: parseInt(time3[0]), minute: parseInt(time3[1]) },
-                { hour: parseInt(time4[0]), minute: parseInt(time4[1]) }
-            ];
-
+            alarmTimes = Array.from({ length: 4 }, (_, i) => {
+                const [hour, minute] = document.getElementById(`time${i + 1}`).value.split(':');
+                return { hour: parseInt(hour), minute: parseInt(minute) };
+            });
             alert("Horários salvos com sucesso!");
         }
 
-        // Inicia a verificação dos alarmes
         function startAlarmCheck() {
             checkAlarmInterval = setInterval(checkAlarm, 10000); // Verifica a cada 10 segundos
         }
 
-        // Adiciona evento ao botão de parada do alarme
+        toggleModeButton.addEventListener('click', () => {
+            const currentValue = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--invert-value'));
+            const newValue = currentValue === 0 ? 100 : 0; // Alterna entre 0% e 100%
+            document.documentElement.style.setProperty('--invert-value', `${newValue}%`);
+            document.documentElement.style.setProperty('--background-color', newValue === 100 ? '#000' : '#fff');
+            document.documentElement.style.setProperty('--text-color', newValue === 100 ? '#fff' : '#000');
+            invertSlider.value = newValue; // Atualiza o slider para refletir o valor atual
+        });
+
+        invertSlider.addEventListener('input', (event) => {
+            const value = event.target.value;
+            document.documentElement.style.setProperty('--invert-value', `${value}%`);
+            document.documentElement.style.setProperty('--background-color', value === '100' ? '#000' : '#fff');
+            document.documentElement.style.setProperty('--text-color', value === '100' ? '#fff' : '#000');
+        });
+
         stopButton.addEventListener('click', stopAlarm);
-
-        // Adiciona evento ao botão de teste do alarme
         testButton.addEventListener('click', triggerAlarm);
-
-        // Adiciona evento ao botão de salvar horários
         saveTimesButton.addEventListener('click', saveAlarmTimes);
-
-        // Inicia a verificação dos alarmes ao carregar a página
+        setInterval(updateDateTime, 1000);
         startAlarmCheck();
     </script>
 </body>
