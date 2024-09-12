@@ -6,9 +6,9 @@
     <title>Alarme de Horários</title>
     <style>
         :root {
-            --invert-value: 0%; /* Valor padrão da inversão */
-            --background-color: #fff; /* Cor de fundo padrão */
-            --text-color: #000; /* Cor do texto padrão */
+            --background-color: #000; /* Cor de fundo para o modo escuro */
+            --text-color: #fff; /* Cor do texto para o modo escuro */
+            --clock-bg-color: #222; /* Cor de fundo do relógio para o modo escuro */
         }
 
         body {
@@ -16,20 +16,13 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            height: 90vh; /* Ajusta a altura da página */
+            margin: 0;
             background-color: var(--background-color);
             color: var(--text-color);
-            transition: background-color 0.3s, color 0.3s, filter 0.3s;
-            filter: invert(var(--invert-value));
+            transition: background-color 0.3s, color 0.3s;
             position: relative;
-        }
-
-        #alarm-light {
-            width: 100%;
-            height: 150px;
-            background-color: red;
-            opacity: 0.1;
-            transition: opacity 0.5s;
+            overflow: hidden; /* Remove a barra de rolagem */
         }
 
         #head {
@@ -41,34 +34,19 @@
         #logo {
             max-width: 100%;
             height: auto;
-        }
-
-        .light-on {
-            opacity: 1;
-            animation: blink 1s infinite;
-        }
-
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.1; }
+            transition: filter 0.3s;
         }
 
         button {
-            margin-top: 20px;
-            padding: 10px 20px;
+            margin-top: 5px;
+            padding: 8px 16px;
             background-color: #ff0000;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-        }
-
-        button.toggle-mode {
-            background-color: #000;
-            color: #fff;
-            position: absolute;
-            top: 10px;
-            right: 10px;
+            width: 150px;
+            font-size: 16px;
         }
 
         #stop-button {
@@ -76,15 +54,51 @@
         }
 
         #alarm-times {
-            margin-top: 20px;
+            margin-top: 10px;
+            color: var(--text-color);
         }
 
         .time-input {
             margin-bottom: 5px;
         }
 
-        .slider-container {
-            margin-top: 10px;
+        #buttons-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+
+        h3, label {
+            color: var(--text-color);
+            transition: color 0.3s;
+        }
+
+        #clock {
+            background-color: var(--clock-bg-color);
+            transition: background-color 0.5s;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 5vw; /* Tamanho da fonte do relógio */
+            text-align: center;
+            width: 100%;
+            max-width: 800px; /* Define uma largura máxima para o relógio */
+            color: var(--text-color); /* Cor do texto do relógio */
+        }
+
+        input#datetime {
+            border: none;
+            background: none;
+            color: inherit;
+            font-size: inherit;
+            text-align: center;
+            width: 100%;
+            box-sizing: border-box; /* Garante que o padding não afete a largura */
+        }
+
+        @keyframes blink {
+            0%, 100% { background-color: var(--clock-bg-color); }
+            50% { background-color: red; } /* Cor piscante durante o alarme */
         }
     </style>
 </head>
@@ -92,50 +106,50 @@
     <div id="head">
         <a href="http://www.alfatek.com.br"><img id="logo" src="logo.png" alt="Logo"></a>
     </div>
-    <button class="toggle-mode" id="toggle-mode">Alternar Modo</button>
+    
     <div id="clock">
-        <input type="text" id="datetime" readonly style="border: none; font-size: 8vw; text-align: center;">
-    </div>
-    <div id="alarm-light"></div>
-    <button id="stop-button">Parar Alarme</button>
-    <button id="test-button">Testar Alarme</button>
-    <audio id="alarm-sound" src="i-feel-good.mp3" preload="auto"></audio>
-
-    <div id="alarm-times">
-        <h3>Horários Programados:</h3>
-        <div class="time-input">
-            <label for="time1">Alarme 1:</label>
-            <input type="time" id="time1" value="08:00">
-        </div>
-        <div class="time-input">
-            <label for="time2">Alarme 2:</label>
-            <input type="time" id="time2" value="12:00">
-        </div>
-        <div class="time-input">
-            <label for="time3">Alarme 3:</label>
-            <input type="time" id="time3" value="13:30">
-        </div>
-        <div class="time-input">
-            <label for="time4">Alarme 4:</label>
-            <input type="time" id="time4" value="18:00">
-        </div>
-        <button id="save-times">Salvar Horários</button>
+        <input type="text" id="datetime" readonly>
     </div>
 
-    <div class="slider-container">
-        <label for="invert-slider">Mudança de Tonalidade</label>
-        <input type="range" id="invert-slider" min="0" max="100" value="0" step="1">
+    <div id="buttons-container">
+        <button id="stop-button">Parar Alarme</button>
+        <button id="test-button">Testar Alarme</button>
+        <button id="toggle-mode">Modo Claro</button> <!-- Botão de Alternar Modo aqui -->
+
+        <audio id="alarm-sound" src="i-feel-good.mp3" preload="auto"></audio>
+
+        <div id="alarm-times">
+            <h3>Horários Programados:</h3>
+            <div class="time-input">
+                <label for="time1">Alarme 1:</label>
+                <input type="time" id="time1" value="08:00">
+            </div>
+            <div class="time-input">
+                <label for="time2">Alarme 2:</label>
+                <input type="time" id="time2" value="12:00">
+            </div>
+            <div class="time-input">
+                <label for="time3">Alarme 3:</label>
+                <input type="time" id="time3" value="13:30">
+            </div>
+            <div class="time-input">
+                <label for="time4">Alarme 4:</label>
+                <input type="time" id="time4" value="18:00">
+            </div>
+            <button id="save-times">Salvar Horários</button>
+        </div>
     </div>
 
     <script>
-        const alarmLight = document.getElementById('alarm-light');
         const alarmSound = document.getElementById('alarm-sound');
         const stopButton = document.getElementById('stop-button');
         const testButton = document.getElementById('test-button');
         const saveTimesButton = document.getElementById('save-times');
         const toggleModeButton = document.getElementById('toggle-mode');
-        const invertSlider = document.getElementById('invert-slider');
-        const body = document.body;
+        const clock = document.getElementById('clock');
+        const logo = document.getElementById('logo');
+
+        let isDarkMode = true; // Define o modo escuro como padrão inicial
 
         let alarmTimes = [
             { hour: 8, minute: 0 },
@@ -161,18 +175,18 @@
         }
 
         function triggerAlarm() {
-            alarmLight.classList.add('light-on');
             alarmSound.play();
             stopButton.style.display = 'block';
+            clock.style.animation = 'blink 1s infinite'; // Animação de piscar para o relógio
             if (document.hidden) window.focus();
             setTimeout(stopAlarm, 60000); // Para o alarme após 1 minuto
         }
 
         function stopAlarm() {
-            alarmLight.classList.remove('light-on');
             alarmSound.pause();
             alarmSound.currentTime = 0;
             stopButton.style.display = 'none';
+            clock.style.animation = ''; // Remove a animação piscante
             clearInterval(checkAlarmInterval);
             setTimeout(startAlarmCheck, 60000); // Pausa de 60s
         }
@@ -189,21 +203,24 @@
             checkAlarmInterval = setInterval(checkAlarm, 10000); // Verifica a cada 10 segundos
         }
 
+        function updateMode() {
+            document.documentElement.style.setProperty('--background-color', isDarkMode ? '#000' : '#fff');
+            document.documentElement.style.setProperty('--text-color', isDarkMode ? '#fff' : '#000');
+            document.documentElement.style.setProperty('--clock-bg-color', isDarkMode ? '#222' : '#fff');
+            toggleModeButton.textContent = isDarkMode ? 'Modo Claro' : 'Modo Escuro';
+
+            // Aplica ou remove a inversão nos elementos específicos
+            const invertValue = isDarkMode ? 'invert(100%)' : 'invert(0%)';
+            logo.style.filter = invertValue;
+        }
+
         toggleModeButton.addEventListener('click', () => {
-            const currentValue = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--invert-value'));
-            const newValue = currentValue === 0 ? 100 : 0; // Alterna entre 0% e 100%
-            document.documentElement.style.setProperty('--invert-value', `${newValue}%`);
-            document.documentElement.style.setProperty('--background-color', newValue === 100 ? '#000' : '#fff');
-            document.documentElement.style.setProperty('--text-color', newValue === 100 ? '#fff' : '#000');
-            invertSlider.value = newValue; // Atualiza o slider para refletir o valor atual
+            isDarkMode = !isDarkMode;
+            updateMode();
         });
 
-        invertSlider.addEventListener('input', (event) => {
-            const value = event.target.value;
-            document.documentElement.style.setProperty('--invert-value', `${value}%`);
-            document.documentElement.style.setProperty('--background-color', value === '100' ? '#000' : '#fff');
-            document.documentElement.style.setProperty('--text-color', value === '100' ? '#fff' : '#000');
-        });
+        // Configura o modo escuro ao carregar a página
+        updateMode();
 
         stopButton.addEventListener('click', stopAlarm);
         testButton.addEventListener('click', triggerAlarm);
