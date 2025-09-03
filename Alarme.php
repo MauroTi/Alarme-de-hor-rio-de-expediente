@@ -30,7 +30,9 @@
         #head {
             width: 90%;
             text-align: center;
-            padding: 10px;
+            padding: 0px;
+            margin-top: 50px;
+            height: auto;
         }
 
         #logo {
@@ -56,10 +58,25 @@
             display: none;
         }
 
-        #alarm-times {
-            margin-top: 10px;
-            color: var(--text-color);
-        }
+       
+             #alarm-times {
+    margin-top: -10px;
+    color: var(--text-color);
+
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* cria 2 colunas */
+    gap: 10px; /* espaço entre itens */
+}
+
+#alarm-times h3 {
+    grid-column: span 2; /* título ocupa as duas colunas */
+}
+
+#alarm-times button {
+    grid-column: span 2; /* botão ocupa as duas colunas */
+    margin: auto;
+}
+
 
         .time-input {
             margin-bottom: 5px;
@@ -84,9 +101,15 @@
             font-size: 5vw;
             text-align: center;
             width: 100%;
-            max-width: 800px;
+            max-width: 900px;
             color: var(--text-color);
         }
+
+      @media (max-width: 1400px) {
+    #clock {
+        font-size: 4.5vw !important;
+    }
+}
 
         input#datetime {
             border: none;
