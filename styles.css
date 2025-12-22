@@ -1,0 +1,105 @@
+:root {
+    --background-color: #000;
+    --text-color: #fff;
+    --clock-bg-color: #222;
+    --button-bg-color: #ff0000;
+    --button-text-color: #fff;
+}
+
+/* Canvas como fundo */
+#water {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 0;
+}
+
+/* Conteúdo acima do fundo */
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 90vh;
+    margin: 0;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+
+#head,
+#clock,
+#buttons-container {
+    position: relative;
+    z-index: 2;
+}
+
+#head {
+    width: 90%;
+    text-align: center;
+    padding: 10px;
+}
+
+#logo {
+    max-width: 100%;
+    height: auto;
+    transition: filter 0.3s;
+}
+
+#clock {
+    background-color: rgba(34, 34, 34, 0.75);
+    backdrop-filter: blur(4px);
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 5vw;
+    text-align: center;
+    width: 100%;
+    max-width: 900px;
+}
+
+input#datetime {
+    border: none;
+    background: none;
+    color: inherit;
+    font-size: inherit;
+    text-align: center;
+    width: 100%;
+}
+
+button {
+    margin-top: 5px;
+    padding: 8px 16px;
+    background-color: var(--button-bg-color);
+    color: var(--button-text-color);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 150px;
+    font-size: 16px;
+}
+
+#stop-button {
+    display: none;
+}
+
+#buttons-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#alarm-times {
+    margin-top: 10px;
+}
+
+@keyframes blink {
+    0%, 100% {
+        background-color: var(--clock-bg-color);
+    }
+    50% {
+        background-color: red;
+    }
+}
